@@ -17,17 +17,17 @@ def _get_hex_color(value, v_min, v_max):
     """
     if value is None:
         return config.COLOR_UNSAMPLED
-    
+
     # 归一化 (0.0 ~ 1.0)
     if v_max <= v_min:
         norm_val = 0.5
     else:
         norm_val = (value - v_min) / (v_max - v_min)
         norm_val = max(0, min(1, norm_val))
-    
+
     # 颜色映射: High -> Red, Low -> Green
     map_pos = 1.0 - norm_val
-    
+
     cmap = plt.get_cmap('RdYlGn')
     rgba = cmap(map_pos)
     return mcolors.to_hex(rgba)
@@ -36,19 +36,19 @@ def _get_hex_color(value, v_min, v_max):
 def _inject_legend_html(html_path, v_min, v_max, indicator_name):
     """注入图例 HTML"""
     legend_html = f"""
-    <div style="position: fixed; bottom: 30px; left: 20px; z-index: 9999; 
-                background-color: rgba(255, 255, 255, 0.95); padding: 15px; 
-                border-radius: 8px; border: 1px solid #ccc; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-                font-family: 'Segoe UI', Arial, sans-serif; min-width: 130px;">
-        <h4 style="margin: 0 0 10px 0; font-size: 14px; font-weight: 600; color: #333;">
+    <div style="position: fixed; bottom: 20px; left: 15px; z-index: 9999;
+                background-color: rgba(255, 255, 255, 0.95); padding: 10px;
+                border-radius: 6px; border: 1px solid #ddd; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+                font-family: 'Segoe UI', Arial, sans-serif; min-width: 100px;">
+        <h4 style="margin: 0 0 8px 0; font-size: 12px; font-weight: 600; color: #333;">
             {indicator_name} (mg/L)
         </h4>
-        <div style="display: flex; align-items: center; height: 160px;">
-            <div style="width: 20px; height: 100%; 
-                        background: linear-gradient(to top, #1a9850, #91cf60, #d9ef8b, #fee08b, #fc8d59, #d73027); 
-                        margin-right: 12px; border: 1px solid #999; border-radius: 3px;"></div>
-            <div style="display: flex; flex-direction: column; justify-content: space-between; 
-                        height: 100%; font-size: 12px; color: #333; font-weight: 500;">
+        <div style="display: flex; align-items: center; height: 120px;">
+            <div style="width: 16px; height: 100%;
+                        background: linear-gradient(to top, #1a9850, #91cf60, #d9ef8b, #fee08b, #fc8d59, #d73027);
+                        margin-right: 10px; border: 1px solid #999; border-radius: 2px;"></div>
+            <div style="display: flex; flex-direction: column; justify-content: space-between;
+                        height: 100%; font-size: 11px; color: #333; font-weight: 500;">
                 <span>{v_max:.2f} (High)</span>
                 <span>{(v_max + v_min) * 0.75:.2f}</span>
                 <span>{(v_max + v_min) * 0.5:.2f}</span>
@@ -58,7 +58,7 @@ def _inject_legend_html(html_path, v_min, v_max, indicator_name):
         </div>
     </div>
     """
-    
+
     try:
         with open(html_path, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -78,20 +78,20 @@ def _inject_custom_styles(html_path):
             font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif !important;
         }
         .vis-network {
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 6px;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.1);
         }
         .vis-tooltip {
             background-color: rgba(50, 50, 50, 0.9) !important;
             color: white !important;
-            border-radius: 6px !important;
-            padding: 10px !important;
-            font-size: 13px !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3) !important;
+            border-radius: 4px !important;
+            padding: 8px !important;
+            font-size: 12px !important;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
         }
     </style>
     """
-    
+
     try:
         with open(html_path, 'r', encoding='utf-8') as f:
             content = f.read()
@@ -104,17 +104,17 @@ def _inject_custom_styles(html_path):
 
 
 def generate_interactive_network(
-    model, 
-    sampled_set=None, 
-    heatmap_data=None, 
-    v_min=0, 
-    v_max=10, 
+    model,
+    sampled_set=None,
+    heatmap_data=None,
+    v_min=0,
+    v_max=10,
     indicator_name="Value",
     base_font_size=20
 ):
     """
     生成交互式网络图
-    
+
     参数:
         model: WetlandSystem 模型实例
         sampled_set: 已采样节点集合 (用于采样状态视图)
@@ -122,37 +122,37 @@ def generate_interactive_network(
         v_min, v_max: 热图颜色范围
         indicator_name: 指标名称
         base_font_size: 基础字体大小
-    
+
     返回:
         str: 生成的 HTML 文件路径
     """
     net = Network(
-        height="800px", 
-        width="100%", 
-        bgcolor="#f8f9fa", 
-        font_color="black", 
+        height="750px",
+        width="100%",
+        bgcolor="#f8f9fa",
+        font_color="black",
         directed=True
     )
-    
+
     for node in model.G.nodes():
         attr = model.G.nodes[node]
         gid = attr.get('Group_ID', 99)
         desc = attr.get('Description', '')
-        
+
         # --- 样式逻辑 ---
         title_str = ""
         font_color = "#FFFFFF"
-        
+
         if sampled_set is not None:
             # 采样状态视图
             if node in sampled_set:
                 color = config.COLOR_SAMPLED
-                title_str = "✅ 状态: 已采样"
+                title_str = "状态: 已采样"
             else:
                 color = config.COLOR_UNSAMPLED
-                title_str = "❌ 状态: 无数据"
+                title_str = "状态: 无数据"
                 font_color = "#333333"
-        
+
         elif heatmap_data is not None:
             # 热图视图
             val = heatmap_data.get(node)
@@ -169,32 +169,32 @@ def generate_interactive_network(
             title_str = f"分组: {gid}"
             if desc:
                 title_str += f"\n描述: {desc}"
-        
+
         # 形状与尺寸
         if node == 'Inlet':
             shape = 'circle'
             size = base_font_size * 2.0
-            title_str = "🚰 总入水口\n" + title_str
+            title_str = "总入水口\n" + title_str
         elif attr.get('Is_Outlet'):
             shape = 'diamond'
             size = base_font_size * 1.5
-            title_str = "🔻 出水口\n" + title_str
+            title_str = "出水口\n" + title_str
         else:
             shape = 'box'
             size = base_font_size * 1.5
-        
+
         # 标签
         label = node
         if heatmap_data and heatmap_data.get(node) is not None:
             label += f"\n{heatmap_data[node]:.2f}"
-        
+
         net.add_node(
             node,
             label=label,
             title=title_str,
             color={
-                'background': color, 
-                'border': color, 
+                'background': color,
+                'border': color,
                 'highlight': {'background': color, 'border': '#333333'}
             },
             shape=shape,
@@ -209,14 +209,14 @@ def generate_interactive_network(
                 'strokeWidth': 0
             },
             borderWidth=0,
-            shadow={'enabled': True, 'size': 3, 'color': 'rgba(0,0,0,0.2)'},
+            shadow={'enabled': True, 'size': 2, 'color': 'rgba(0,0,0,0.15)'},
             shapeProperties={
                 'useImageSize': False,
                 'useBorderWithImage': False,
-                'borderRadius': 6
+                'borderRadius': 4
             }
         )
-    
+
     # 添加边
     for src, tgt in model.G.edges():
         net.add_edge(
@@ -225,12 +225,12 @@ def generate_interactive_network(
             width=2,
             arrowStrikethrough=False,
             smooth={
-                'type': 'cubicBezier', 
-                'forceDirection': 'vertical', 
+                'type': 'cubicBezier',
+                'forceDirection': 'vertical',
                 'roundness': 0.6
             }
         )
-    
+
     # 设置布局选项
     net.set_options(f"""
     var options = {{
@@ -239,7 +239,7 @@ def generate_interactive_network(
           "enabled": true,
           "levelSeparation": {config.LEVEL_SEPARATION},
           "nodeSpacing": {config.NODE_SPACING},
-          "treeSpacing": 220,
+          "treeSpacing": 200,
           "blockShifting": true,
           "edgeMinimization": true,
           "parentCentralization": true,
@@ -265,15 +265,15 @@ def generate_interactive_network(
       }}
     }}
     """)
-    
+
     output_path = os.path.join(config.BASE_DIR, "temp_network.html")
     net.save_graph(output_path)
-    
+
     # 注入自定义样式
     _inject_custom_styles(output_path)
-    
+
     # 如果是热图模式，注入图例
     if heatmap_data is not None:
         _inject_legend_html(output_path, v_min, v_max, indicator_name)
-    
+
     return output_path

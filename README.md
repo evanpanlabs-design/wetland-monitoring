@@ -1,8 +1,8 @@
-# 🌿 海口凤翔湿地数字监测平台
+# 海口凤翔湿地数字监测平台
 
 基于 Streamlit 构建的人工湿地水质监测可视化平台，支持拓扑展示、采样监控、链路分析和全局热图等功能。
 
-## 🚀 快速开始
+## 快速开始
 
 ### 1. 安装依赖
 
@@ -24,7 +24,7 @@ python scripts/csv_to_sqlite.py
 streamlit run app.py
 ```
 
-## 📁 项目结构
+## 项目结构
 
 ```
 wetland-monitoring/
@@ -42,19 +42,23 @@ wetland-monitoring/
 └── requirements.txt     # 依赖列表
 ```
 
-## 🔧 技术栈
+## 技术栈
 
 - **前端**: Streamlit, PyVis, Plotly
 - **后端**: Python, NetworkX
 - **数据库**: SQLite
 - **部署**: Streamlit Cloud
 
-## 📝 License
+## 功能模块
 
-MIT License
-```
+| 模块 | 功能描述 |
+|------|----------|
+| 物理拓扑 | 展示湿地各单元的连接关系和层级结构 |
+| 采样监控 | 按日期查看采样点位分布，显示采样覆盖率统计 |
+| 链路分析 | 分析污染物沿水流路径的浓度变化 |
+| 全局热图 | 显示各监测点的浓度分布热图 |
 
-## 三、Streamlit Cloud 部署 SOP
+## Streamlit Cloud 部署
 
 ### 步骤 1: 准备 GitHub 仓库
 
@@ -67,10 +71,9 @@ git init
 git add .
 
 # 3. 首次提交
-git commit -m "Initial commit: 湿地监测平台 v2.0"
+git commit -m "Initial commit: 湿地监测平台 v2.1"
 
 # 4. 创建 GitHub 仓库（在 GitHub 网站上操作）
-# 仓库名建议: wetland-monitoring
 
 # 5. 关联远程仓库
 git remote add origin https://github.com/你的用户名/wetland-monitoring.git
@@ -85,7 +88,7 @@ git push -u origin main
 ```bash
 # 1. 确保 CSV 文件在 data/ 目录下
 # - data/Master_GlobalUID.csv
-# - data/Connections.csv  
+# - data/Connections.csv
 # - data/Measurements.csv
 
 # 2. 运行迁移脚本
@@ -102,44 +105,16 @@ git push
 
 ### 步骤 3: 部署到 Streamlit Cloud
 
-1. **访问 Streamlit Cloud**
-   - 打开 https://share.streamlit.io/
-   - 使用 GitHub 账号登录
+1. 访问 https://share.streamlit.io/
+2. 使用 GitHub 账号登录
+3. 点击 "New app"
+4. 选择仓库、分支、主文件路径 (app.py)
+5. 点击 "Deploy!"
 
-2. **创建新应用**
-   - 点击 "New app"
-   - 选择仓库: `你的用户名/wetland-monitoring`
-   - 选择分支: `main`
-   - 主文件路径: `app.py`
-
-3. **配置设置**
-   - Python 版本: 3.9 或 3.10
-   - 点击 "Deploy!"
-
-4. **等待部署**
-   - 通常需要 2-5 分钟
-   - 可以在日志中查看部署进度
-
-5. **获取访问链接**
-   - 部署成功后，获得类似链接:
-   - `https://你的用户名-wetland-monitoring-app-xxxxx.streamlit.app`
-
-### 步骤 4: 后续更新
-
-```bash
-# 每次修改代码后
-git add .
-git commit -m "更新描述"
-git push
-
-# Streamlit Cloud 会自动检测并重新部署
-```
-
-## 四、常见问题解决
+## 常见问题
 
 ### Q1: 数据库文件太大无法推送
 ```bash
-# 使用 Git LFS
 git lfs install
 git lfs track "*.db"
 git add .gitattributes
@@ -150,20 +125,6 @@ git commit -m "Enable Git LFS for database"
 - 确保 `data/wetland.db` 已提交到仓库
 - 检查 `.gitignore` 没有忽略 `.db` 文件
 
-### Q3: 内存不足错误
-- 在 `app.py` 中减少缓存数据量
-- 使用 `st.cache_data(ttl=300)` 限制缓存时间
+## License
 
-### Q4: 页面加载缓慢
-- 考虑对大型数据集进行分页
-- 使用数据库索引优化查询
-
-## 五、验证清单
-
-- [ ] CSV 文件格式正确
-- [ ] 运行迁移脚本成功
-- [ ] `wetland.db` 生成在 `data/` 目录
-- [ ] 本地 `streamlit run app.py` 正常运行
-- [ ] 代码已推送到 GitHub
-- [ ] Streamlit Cloud 部署成功
-- [ ] 在线访问正常
+MIT License
